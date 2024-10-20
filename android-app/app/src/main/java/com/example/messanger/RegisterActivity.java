@@ -10,12 +10,9 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.messanger.model.LoginResponse;
-import com.example.messanger.model.RegisterRequest;
+import com.example.messanger.DTO.LoginResponse;
+import com.example.messanger.DTO.RegisterRequest;
 import com.example.messanger.service.AuthService;
 
 import retrofit2.Call;
@@ -85,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             private void updateUI() {
-                Intent intent = new Intent(RegisterActivity.this, ChatActivity.class);
+                Intent intent = new Intent(RegisterActivity.this, ChatsActivity.class);
                 startActivity(intent);
                 finish();
             }

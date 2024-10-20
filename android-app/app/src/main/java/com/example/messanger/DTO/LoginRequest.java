@@ -1,4 +1,4 @@
-package com.example.messanger.model;
+package com.example.messanger.DTO;
 
 public class LoginRequest {
     private String username;

@@ -1,8 +1,7 @@
 package com.example.messanger.service;
-import com.example.messanger.RegisterActivity;
-import com.example.messanger.model.LoginRequest;
-import com.example.messanger.model.LoginResponse;
-import com.example.messanger.model.RegisterRequest;
+import com.example.messanger.DTO.LoginRequest;
+import com.example.messanger.DTO.LoginResponse;
+import com.example.messanger.DTO.RegisterRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

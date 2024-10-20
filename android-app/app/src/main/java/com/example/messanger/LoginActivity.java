@@ -11,8 +11,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.messanger.model.LoginRequest;
-import com.example.messanger.model.LoginResponse;
+import com.example.messanger.DTO.LoginRequest;
+import com.example.messanger.DTO.LoginResponse;
 import com.example.messanger.service.AuthService;
 
 import retrofit2.Call;
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             private void updateUI() {
-                Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
+                Intent intent = new Intent(LoginActivity.this, ChatsActivity.class);
                 startActivity(intent);
                 finish();
             }

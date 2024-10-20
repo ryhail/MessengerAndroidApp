@@ -2,16 +2,43 @@
     <!-- Base application theme. -->
     <style name="Theme.Messanger" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#FC868A</item>
-        <item name="colorPrimaryVariant">#BC002F</item>
+        <item name="colorPrimary">#FF6060</item>
+        <item name="colorPrimaryVariant">#DC0E46</item>
         <item name="colorOnPrimary">@color/black</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">#DA0340</item>
         <item name="colorSecondaryVariant">#DA036F</item>
         <item name="colorOnSecondary">@color/black</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
 
+        <!-- Background color -->
+        <item name="android:windowBackground">#FFFFFF</item> <!-- Цвет фона приложения -->
+        <item name="android:colorBackground">#F5F5F5</item> <!-- Цвет фона для элементов -->
+
+        <!-- Text appearance -->
+        <item name="android:textColor">#FFFFFF</item> <!-- Цвет текста по умолчанию -->
+        <item name="android:textColorSecondary">#7F7F7F</item> <!-- Цвет вторичного текста -->
+
+        <!-- Button style -->
+        <item name="buttonStyle">@style/MyButtonStyle</item>
+        <item name="navigationViewStyle">@style/NavView</item>
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
+    <!-- Custom button style -->
+    <style name="MyButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:buttonCornerRadius">16dp</item>
+    </style>
+    <style name="ToolbarTitleText" parent="TextAppearance.MaterialComponents.Tooltip">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="NavView" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

@@ -1,13 +1,13 @@
-package com.example.messanger;
+package com.example.messanger.model;
 
 public class User {
+    private Long id;
     private String username;
-    private String password;
     private String email;
 
-    public User(String username, String password, String email) {
+    public User(Long id, String username, String email) {
+        this.id = id;
         this.username = username;
-        this.password = password;
         this.email = email;
     }
 
@@ -15,11 +15,11 @@ public class User {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getEmail() {
         return email;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

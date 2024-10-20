@@ -50,9 +50,9 @@ public class UserService {
     public UserData getCurrentUserData() {
         User currentUser = getCurrentUser();
         return UserData.builder()
+                .id(currentUser.getId())
                 .username(currentUser.getUsername())
                 .email(currentUser.getEmail())
-                .role(currentUser.getRole())
                 .build();
     }
 

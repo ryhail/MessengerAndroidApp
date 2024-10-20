@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserData {
+    private Long id;
     private String username;
     private String email;
-    private Role role;
 }
