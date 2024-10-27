@@ -151,12 +151,15 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
 
                 } else if (id == R.id.nav_profile) {
                     Toast.makeText(ChatsActivity.this, "Профиль выбран", Toast.LENGTH_SHORT).show();
-
+                    Intent intent = new Intent(ChatsActivity.this, ProfileActivity.class);
+                    intent.putExtra("USER_ID", currentUser.getId());
+                    intent.putExtra("USER_NAME", currentUser.getUsername());
+                    startActivity(intent);
                 } else if (id == R.id.nav_logout) {
                     Toast.makeText(ChatsActivity.this, "Выход выбран", Toast.LENGTH_SHORT).show();
                     logout();
-
                 }
+                navigationView.setCheckedItem(0);
                 drawerLayout.closeDrawer(GravityCompat.START);  // Закрываем боковое меню после выбора
                 return true;
             }
@@ -184,8 +187,9 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
     public void onChatClick(Chat chat) {
         Intent intent = new Intent(ChatsActivity.this, MessagesActivity.class);
         intent.putExtra("CHAT_ID", chat.getId());
-        intent.putExtra("CURRENT_USER_ID", currentUser.getId());
-        intent.putExtra("CURRENT_USER_NAME", currentUser.getUsername());
+        intent.putExtra("CHAT_NAME", chat.getName());
+        intent.putExtra("USER_ID", currentUser.getId());
+        intent.putExtra("USER_NAME", currentUser.getUsername());
         startActivity(intent);
     }
 

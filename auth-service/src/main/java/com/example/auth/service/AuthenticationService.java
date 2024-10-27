@@ -3,6 +3,7 @@ package com.example.auth.service;
 import com.example.auth.DTO.JwtAuthenticationResponse;
 import com.example.auth.DTO.SignInRequest;
 import com.example.auth.DTO.SignUpRequest;
+import com.example.auth.model.Profile;
 import com.example.auth.model.Role;
 import com.example.auth.model.User;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +30,16 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .build();
-
-        userService.create(user);
-
+        user = userService.create(user);
+        user.setUserProfile(Profile.builder()
+                .id(user.getId())
+                .nickname(request.getUsername())
+                .bio("Новый пользователь")
+                .registrationDate(new Date())
+                .profilePicture("")
+                .privacy(false)
+                .build());
+        userService.save(user);
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }

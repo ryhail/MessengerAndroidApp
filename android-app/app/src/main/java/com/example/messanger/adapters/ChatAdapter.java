@@ -44,7 +44,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         Chat chat = chatList.get(position);
-        holder.chatTitle.setText(chat.getId().toString());
+        holder.chatTitle.setText(chat.getName());
         if(chat.getLastMessage() != null) {
             holder.lastMessage.setText(chat.getLastMessage());
             holder.messageTime.setText(chat.getMessageTime());

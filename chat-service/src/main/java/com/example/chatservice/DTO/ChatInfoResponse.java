@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class ChatInfoResponse {
     private Long id;
+    private String name;
     private Message lastMessage;
     private Set<Chatter> chatters;
 }

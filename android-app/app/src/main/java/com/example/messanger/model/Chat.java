@@ -10,12 +10,16 @@ import java.util.TimeZone;
 
 public class Chat {
     private Long id;
+    private String name;
     @Nullable
     private Message lastMessage;
     private Set<Chatter> chatters;
 
     public Long getId() {
         return id;
+    }
+    public String getName() {
+        return this.name;
     }
 
     public String getLastMessage() {

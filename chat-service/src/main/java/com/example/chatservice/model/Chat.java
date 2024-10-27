@@ -21,6 +21,7 @@ public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String name;
     @OneToMany
     @JoinColumn(name = "message_id", referencedColumnName = "id")
     @Cascade({PERSIST, MERGE})
@@ -34,5 +35,14 @@ public class Chat {
 
     public void addMessage(Message message) {
         this.messages.add(message);
+    }
+
+    public String getNameForUser(Long id) {
+        for (Chatter chatter : chatters) {
+            if (!chatter.getId().equals(id)) {
+                return chatter.getName();
+            }
+        }
+        return chatters.stream().findFirst().get().getName();
     }
 }

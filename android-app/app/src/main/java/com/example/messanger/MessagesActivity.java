@@ -2,6 +2,7 @@ package com.example.messanger;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +40,7 @@ import retrofit2.Retrofit;
 public class MessagesActivity extends AppCompatActivity {
     private String user_token;
     private SharedPreferences preferences;
-    private TextView chatName;
+    private String chatName;
     private RecyclerView recyclerViewMessages;
     private EditText editTextMessage;
     private Button buttonSend;
@@ -55,7 +56,7 @@ public class MessagesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
-
+        getWindow().setNavigationBarColor(getColor(R.color.red));
         preferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
         user_token = preferences.getString("jwt_token", "NONE");
         if (user_token.isEmpty() || user_token.equals("NONE")) {
@@ -76,11 +77,11 @@ public class MessagesActivity extends AppCompatActivity {
         });
         // Получаем имя чата и ID текущего пользователя из Intent
         Intent intent = getIntent();
+        chatName = intent.getStringExtra("CHAT_NAME");
         chatId = intent.getLongExtra("CHAT_ID", -1);
-        currentUser = new User(intent.getLongExtra("CURRENT_USER_ID", -1),
-                            intent.getStringExtra("CURRENT_USER_NAME"),"");
-        //chatName.setText(chatId.toString());
-        toolbar.setTitle(chatId.toString());
+        currentUser = new User(intent.getLongExtra("USER_ID", -1),
+                            intent.getStringExtra("USER_NAME"),"");
+        toolbar.setTitle(chatName);
         getMessages();
 
         buttonSend.setOnClickListener(new View.OnClickListener() {

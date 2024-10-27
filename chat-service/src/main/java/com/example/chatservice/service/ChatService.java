@@ -27,6 +27,7 @@ public class ChatService {
         List<Chat> chats = repository.getChatsByChattersId(id);
         List<ChatInfoResponse> chatsInfo = chats.stream().map(chat -> new ChatInfoResponse(
                 chat.getId(),
+                chat.getNameForUser(id),
                 chat.getMessages().isEmpty() ? null: chat.getMessages().get(chat.getMessages().size()-1),
                 chat.getChatters()))
                 .toList();
@@ -49,6 +50,7 @@ public class ChatService {
             else
                 chat.getChatters().add(chatter);
         }
+        chat.setName(request.getChatters().get(0).getName() + " и " + request.getChatters().get(1).getName());
         repository.save(chat);
     }
 
