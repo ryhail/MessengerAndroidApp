@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
-    List<Profile> findProfilesByNickname(String name);
+    List<Profile> findProfilesByNicknameStartingWithIgnoreCase(String name);
 }

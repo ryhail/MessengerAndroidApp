@@ -2,6 +2,8 @@ package com.example.chatservice.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.springframework.data.repository.cdi.Eager;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,7 +28,7 @@ public class Chat {
     @JoinColumn(name = "message_id", referencedColumnName = "id")
     @Cascade({PERSIST, MERGE})
     private List<Message> messages = new LinkedList<Message>();
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "chat_chatter",
             joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "chatter_id"))

@@ -3,6 +3,7 @@ package com.example.chatservice.controller;
 import com.example.chatservice.DTO.MessageData;
 import com.example.chatservice.DTO.NewMessageRequest;
 import com.example.chatservice.model.Message;
+import com.example.chatservice.model.MessageType;
 import com.example.chatservice.service.ChatService;
 import com.example.chatservice.service.MessageService;
 import jakarta.validation.Valid;
@@ -28,6 +29,10 @@ public class MessageController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addNewMessage(@RequestBody @Valid NewMessageRequest newMessageRequest,
                               @PathVariable Long chatId) {
-        messageService.addMessage(newMessageRequest, chatId);
+        if(newMessageRequest.getType() == MessageType.text)
+            messageService.addMessage(newMessageRequest, chatId);
+        else if (newMessageRequest.getType() == MessageType.image) {
+            messageService.addImageMessage(newMessageRequest, chatId);
+        }
     }
 }

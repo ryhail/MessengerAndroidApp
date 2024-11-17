@@ -1,17 +1,22 @@
 package com.example.messanger.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextClock;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.messanger.R;
 import com.example.messanger.model.Message;
+import com.example.messanger.model.MessageType;
+import com.example.messanger.util.OrientationTransformation;
+
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -55,9 +60,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
         if (holder instanceof CurrentUserMessageViewHolder) {
-            ((CurrentUserMessageViewHolder) holder).bind(message);
+            ((CurrentUserMessageViewHolder) holder).bind(message, context);
         } else if (holder instanceof OtherUserMessageViewHolder) {
-            ((OtherUserMessageViewHolder) holder).bind(message);
+            ((OtherUserMessageViewHolder) holder).bind(message, context);
         }
 
     }
@@ -69,16 +74,30 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public static class CurrentUserMessageViewHolder extends RecyclerView.ViewHolder {
         TextView textMessage;
+        ImageView imageView;
         TextView timestamp;
 
         public CurrentUserMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             textMessage = itemView.findViewById(R.id.text_message);
             timestamp = itemView.findViewById(R.id.date_message);
+            imageView = itemView.findViewById(R.id.current_user_image);
         }
 
-        public void bind(Message message) {
-            textMessage.setText(message.getText());
+        public void bind(Message message, Context context) {
+            if(message.getType() == MessageType.text) {
+                textMessage.setText(message.getContent());
+            }
+            if(message.getType() == MessageType.image) {
+                textMessage.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(((AppCompatActivity)context).getString(R.string.auth_base_url) +  message.getContent())
+                        .transform(new OrientationTransformation())
+                        .placeholder(R.drawable.loading)
+                        .error(R.drawable.no_image)
+                        .into(imageView);
+            }
             timestamp.setText(message.getMessageTime());
         }
     }
@@ -86,16 +105,30 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     // ViewHolder для сообщений других пользователей
     public static class OtherUserMessageViewHolder extends RecyclerView.ViewHolder {
         TextView textMessage;
+        ImageView imageView;
         TextView timestamp;
 
         public OtherUserMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             textMessage = itemView.findViewById(R.id.text_message);
+            imageView = itemView.findViewById(R.id.other_user_image);
             timestamp = itemView.findViewById(R.id.date_message);
         }
 
-        public void bind(Message message) {
-            textMessage.setText(message.getText());
+        public void bind(Message message, Context context) {
+            if(message.getType() == MessageType.text) {
+                textMessage.setText(message.getContent());
+            }
+            if(message.getType() == MessageType.image) {
+                textMessage.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(((AppCompatActivity)context).getString(R.string.auth_base_url) +  message.getContent())
+                        .transform(new OrientationTransformation())
+                        .placeholder(R.drawable.loading)
+                        .error(R.drawable.no_image)
+                        .into(imageView);
+            }
             timestamp.setText(message.getMessageTime());
         }
     }

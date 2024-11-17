@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="@drawable/profile_item_bg">
+
+    <!-- Фото профиля пользователя -->
+    <ImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginEnd="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_profile"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Никнейм пользователя -->
+        <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Никнейм"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+
+        <!-- Дата регистрации -->
+        <TextView
+            android:id="@+id/registrationDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата регистрации"
+            android:textSize="14sp"
+            android:textColor="@color/light_gray"/>
+
+        <!-- Био пользователя с обрезкой текста -->
+        <TextView
+            android:id="@+id/bioTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="Биография пользователя..."
+            android:textSize="14sp"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/startChatButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:backgroundTint="?attr/colorPrimaryVariant"
+        android:textColor="@android:color/white"
+        android:text="Чат"
+        android:layout_margin="8dp" />
+
+</LinearLayout>

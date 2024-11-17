@@ -6,18 +6,20 @@ import java.util.TimeZone;
 
 public class Message {
     private Long id;
-    private String text;
+    private String content;
     private Date timestamp;
+    private MessageType type;
     private Long senderId;
 
-    public Message(String text, Long senderId) {
-        this.text = text;
+    public Message(String content, MessageType type, Long senderId) {
+        this.content = content;
         this.senderId = senderId;
+        this.type = type;
         this.timestamp = new Date();
     }
 
-    public String getText() {
-        return text;
+    public String getContent() {
+        return content;
     }
 
     public Date getTimestamp() {
@@ -32,5 +34,11 @@ public class Message {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
         return dateFormat.format(timestamp);
+    }
+    public MessageType getType() {
+        return type;
+    }
+    public void setType(MessageType type) {
+        this.type = type;
     }
 }

@@ -7,64 +7,93 @@
     android:theme="@style/Theme.Messanger"
     tools:context=".ProfileActivity">
 
-    <ImageView
-        android:id="@+id/profileImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/ic_profile"
-    android:contentDescription="@string/profile_image_desc"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <EditText
-        android:id="@+id/displayNameEditText"
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/profile_toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:padding="10dp"
-        android:hint="Имя пользователя"
-        app:layout_constraintTop_toBottomOf="@id/profileImage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.8"
-        android:layout_marginTop="16dp" />
+        android:background="?attr/colorPrimaryVariant"
+        android:padding="15dp"
+        app:title="Профиль"
+        app:titleTextAppearance="@style/ToolbarTitleText"
+        app:titleTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/userInfoEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/sample_user_info"
-        android:inputType="textMultiLine"
-        android:gravity="top"
-        android:minHeight="100dp"
-        app:layout_constraintTop_toBottomOf="@id/displayNameEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.8"
-        android:layout_marginTop="16dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <CheckBox
-        android:id="@+id/privacyCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/privacy_checkbox_text"
-        app:layout_constraintTop_toBottomOf="@id/userInfoEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:layout_marginBottom="32dp"
+            android:contentDescription="@string/profile_image_desc"
+            android:src="@drawable/ic_profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/registrationDateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Дата регистрации: "
-        android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/privacyCheckBox"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <Button
+            android:id="@+id/upload_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Загрузить фото"
+            android:textColor="@color/white"/>
+
+        <EditText
+            android:id="@+id/displayNameEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:hint="Имя пользователя"
+            android:inputType="textNoSuggestions"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profileImage"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <EditText
+            android:id="@+id/userInfoEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:inputType="textNoSuggestions"
+            android:hint="Информация о пользователе"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/displayNameEditText"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <CheckBox
+            android:id="@+id/privacyCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/privacy_checkbox_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/userInfoEditText" />
+
+        <TextView
+            android:id="@+id/registrationDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Дата регистрации: "
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/privacyCheckBox" />
+
+        <Button
+            android:layout_marginTop="16dp"
+            android:id="@+id/update_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Обновить"
+            android:textColor="@color/white"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,8 +2,11 @@ package com.example.messanger;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,17 +14,19 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.messanger.adapters.ChatAdapter;
 import com.example.messanger.model.Chat;
+import com.example.messanger.model.Profile;
 import com.example.messanger.model.User;
 import com.example.messanger.DTO.UserDataResponse;
 import com.example.messanger.service.ChatService;
+import com.example.messanger.service.ProfileService;
 import com.example.messanger.service.UserService;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
@@ -103,10 +108,31 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
     }
 
     private void setupCurrentUser() {
-        TextView view = findViewById(R.id.nav_header_title);
-        view.setText(currentUser.getUsername());
-        view = findViewById(R.id.nav_header_subtitle);
-        view.setText(currentUser.getEmail());
+        Retrofit retrofit = ApiClient.getAuthorizedClient(getString(R.string.auth_base_url),user_token);
+        ProfileService profileService = retrofit.create(ProfileService.class);
+        TextView viewUsername = findViewById(R.id.nav_header_title);
+        TextView viewEmail = findViewById(R.id.nav_header_subtitle);
+        ImageView imageView = findViewById(R.id.nav_header_imageview);
+        profileService.getProfile(currentUser.getId()).enqueue(new Callback<Profile>() {
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    Glide.with(ChatsActivity.this)
+                            .load(getString(R.string.auth_base_url) + response.body().getProfilePicture())
+                            .circleCrop()
+                            .placeholder(R.drawable.load)
+                            .error(R.drawable.no_image)
+                            .into(imageView);
+                    viewUsername.setText(response.body().getNickname());
+                    viewEmail.setText(currentUser.getEmail());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Toast.makeText(ChatsActivity.this, "Не удалось получить профиль пользователя" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getChats() {
@@ -129,7 +155,7 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
             @Override
             public void onFailure(Call<List<Chat>> call, Throwable t) {
                 Toast.makeText(ChatsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                returnToLoginPage();
+                //returnToLoginPage();
             }
         });
     }
@@ -146,24 +172,43 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                if (id == R.id.nav_chat) {
-                    Toast.makeText(ChatsActivity.this, "Чаты выбраны", Toast.LENGTH_SHORT).show();
-
-                } else if (id == R.id.nav_profile) {
+                if (id == R.id.nav_profile) {
                     Toast.makeText(ChatsActivity.this, "Профиль выбран", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ChatsActivity.this, ProfileActivity.class);
-                    intent.putExtra("USER_ID", currentUser.getId());
-                    intent.putExtra("USER_NAME", currentUser.getUsername());
+                    if(currentUser != null) {
+                        intent.putExtra("USER_ID", currentUser.getId());
+                        intent.putExtra("USER_NAME", currentUser.getUsername());
+                    }
                     startActivity(intent);
+                    finish();
                 } else if (id == R.id.nav_logout) {
                     Toast.makeText(ChatsActivity.this, "Выход выбран", Toast.LENGTH_SHORT).show();
                     logout();
+                } else if (id == R.id.nav_search) {
+                    if(currentUser != null) {
+                        Intent intent = new Intent(ChatsActivity.this, SearchActivity.class);
+                        intent.putExtra("USER_ID", currentUser.getId());
+                        intent.putExtra("USER_NAME", currentUser.getUsername());
+                        startActivityForResult(intent, 1234);
+                    } else {
+                        Toast.makeText(ChatsActivity.this, "Нет подключения", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
+
                 navigationView.setCheckedItem(0);
                 drawerLayout.closeDrawer(GravityCompat.START);  // Закрываем боковое меню после выбора
                 return true;
             }
         });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1234 && resultCode == 4321) {
+            getChats();
+        }
     }
 
     @Override
@@ -191,6 +236,7 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
         intent.putExtra("USER_ID", currentUser.getId());
         intent.putExtra("USER_NAME", currentUser.getUsername());
         startActivity(intent);
+        finish();
     }
 
     private void logout() {

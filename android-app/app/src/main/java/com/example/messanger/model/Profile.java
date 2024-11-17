@@ -1,9 +1,7 @@
 package com.example.messanger.model;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class Profile {
     private Long id;
@@ -37,10 +35,9 @@ public class Profile {
         this.bio = bio;
     }
 
-    public String getRegistrationDate() {
+    public String getRegistrationDateString() {
         return SimpleDateFormat.getDateInstance().format(registrationDate);
     }
-
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
     }

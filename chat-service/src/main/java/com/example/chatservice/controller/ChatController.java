@@ -29,6 +29,11 @@ public class ChatController {
     public void createNewChat(@RequestBody CreateChatRequest createChatRequest) {
         chatService.createChat(createChatRequest);
     }
+    @PostMapping("/get-or-create")
+    public ChatInfoResponse ChatInfoResponse(@RequestBody CreateChatRequest createChatRequest) {
+        return chatService.createOrGet(createChatRequest);
+    }
+
     @GetMapping("/{userId}")
     public List<ChatInfoResponse> getUsersChats(@PathVariable Long userId) {
         return chatService.getChatsByChattersId(userId);

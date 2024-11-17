@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -23,8 +22,11 @@ public class Chat {
     }
 
     public String getLastMessage() {
-        if(lastMessage != null)
-            return lastMessage.getText();
+        if(lastMessage != null) {
+            if (lastMessage.getType() == MessageType.image)
+                return "изображение";
+            return lastMessage.getContent();
+        }
         else
             return "Нет сообщений";
     }

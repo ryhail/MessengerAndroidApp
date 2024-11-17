@@ -1,9 +1,14 @@
 package com.example.messanger;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,19 +23,27 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messanger.DTO.CreateChatRequest;
+import com.example.messanger.DTO.ImageRequest;
 import com.example.messanger.DTO.NewMessageRequest;
 import com.example.messanger.adapters.ChatAdapter;
 import com.example.messanger.adapters.MessageAdapter;
 import com.example.messanger.model.Chat;
 import com.example.messanger.model.Chatter;
 import com.example.messanger.model.Message;
+import com.example.messanger.model.MessageType;
+import com.example.messanger.model.Profile;
 import com.example.messanger.model.User;
 import com.example.messanger.service.ChatService;
 import com.example.messanger.service.MessageService;
 import com.google.android.material.appbar.MaterialToolbar;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +51,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class MessagesActivity extends AppCompatActivity {
+    private static final int RQ_IMAGE_PICK = 666;
     private String user_token;
     private SharedPreferences preferences;
     private String chatName;
@@ -51,6 +65,8 @@ public class MessagesActivity extends AppCompatActivity {
     private MessageService msgService;
     private MaterialToolbar toolbar;
     private Retrofit retrofit;
+    private ChatService chatService;
+    private Button addImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,22 +88,98 @@ public class MessagesActivity extends AppCompatActivity {
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
-        toolbar.setOnClickListener(v -> {
+        addImage = findViewById(R.id.buttonAddImage);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(MessagesActivity.this, ChatsActivity.class);
+            startActivity(intent);
             finish();
         });
-        // Получаем имя чата и ID текущего пользователя из Intent
+
         Intent intent = getIntent();
-        chatName = intent.getStringExtra("CHAT_NAME");
         chatId = intent.getLongExtra("CHAT_ID", -1);
         currentUser = new User(intent.getLongExtra("USER_ID", -1),
-                            intent.getStringExtra("USER_NAME"),"");
-        toolbar.setTitle(chatName);
-        getMessages();
+                intent.getStringExtra("USER_NAME"),"");
+        if(chatId != -1) {
+            chatName = intent.getStringExtra("CHAT_NAME");
+            toolbar.setTitle(chatName);
+            getMessages();
+        } else {
+            getChatWithUserId(intent.getLongExtra("PROFILE_ID", -1),
+                    intent.getStringExtra("PROFILE_NAME"));
+        }
+
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendMessage();
+            }
+        });
+        addImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, RQ_IMAGE_PICK);
+            }
+        });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RQ_IMAGE_PICK && resultCode == RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                uploadImage(bitmap);
+                Toast.makeText(MessagesActivity.this, "Отправка изображения", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    private String convertBitmapToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+    private void uploadImage(Bitmap bitmap) {
+        String base64Image = convertBitmapToBase64(bitmap);
+        msgService.addNewMessage(chatId, new NewMessageRequest(
+                new Chatter(currentUser.getId(), currentUser.getUsername()),
+                base64Image,MessageType.image)).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code() == 201) {
+                    getMessages();
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MessagesActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getChatWithUserId(long profileId, String profileName) {
+        Set<Chatter> chatters = new HashSet<>();
+        chatters.add(new Chatter(currentUser.getId(),currentUser.getUsername()));
+        chatters.add(new Chatter(profileId,profileName));
+        CreateChatRequest request = new CreateChatRequest(chatters);
+        retrofit = ApiClient.getAuthorizedClient(getString(R.string.chats_base_url), user_token);
+        chatService = retrofit.create(ChatService.class);
+        chatService.getOrCreate(request).enqueue(new Callback<Chat>() {
+            @Override
+            public void onResponse(Call<Chat> call, Response<Chat> response) {
+                chatId = response.body().getId();
+                chatName = response.body().getName();
+                toolbar.setTitle(profileName);
+                getMessages();
+            }
+
+            @Override
+            public void onFailure(Call<Chat> call, Throwable t) {
+                finish();
             }
         });
     }
@@ -118,13 +210,15 @@ public class MessagesActivity extends AppCompatActivity {
         recyclerViewMessages.setAdapter(messageAdapter);
     }
 
+
+
     private void sendMessage() {
         String messageText = editTextMessage.getText().toString().trim();
         if (!messageText.isEmpty()) {
             editTextMessage.setText("");
             NewMessageRequest request = new NewMessageRequest(
                     new Chatter(currentUser.getId(), currentUser.getUsername()),
-                    messageText);
+                    messageText, MessageType.text);
             retrofit = ApiClient.getAuthorizedClient(getString(R.string.chats_base_url), user_token);
             msgService.addNewMessage(chatId, request).enqueue(new Callback<Void>() {
                 @Override
@@ -138,7 +232,6 @@ public class MessagesActivity extends AppCompatActivity {
                     Toast.makeText(MessagesActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-
         }
     }
 }
