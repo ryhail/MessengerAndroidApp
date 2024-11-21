@@ -16,8 +16,8 @@
     <string name="register_button_text">Регистрация</string>
     <string name="email_hint">Email</string>
     <string name="login_text">Войти в аккаунт</string>
-    <string name="auth_base_url">http://192.168.0.103:8080</string>
-    <string name="chats_base_url">http://192.168.0.103:8081</string>
+    <string name="auth_base_url">http://10.0.2.2:8080</string>
+    <string name="chats_base_url">http://10.0.2.2:8081</string>
     <string name="navigation_drawer_open">Открыть меню</string>
     <string name="navigation_drawer_close">Закрыть меню</string>
     <string name="sample_user_info">Био</string>

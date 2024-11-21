@@ -44,6 +44,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,6 +69,8 @@ public class MessagesActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private ChatService chatService;
     private Button addImage;
+    private Timer t;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,7 @@ public class MessagesActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(MessagesActivity.this, ChatsActivity.class);
             startActivity(intent);
+            t.cancel();
             finish();
         });
 
@@ -108,6 +113,13 @@ public class MessagesActivity extends AppCompatActivity {
                     intent.getStringExtra("PROFILE_NAME"));
         }
 
+        t = new Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updateMessageList();
+            }
+        },2000, 500);
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,6 +149,7 @@ public class MessagesActivity extends AppCompatActivity {
             }
         }
     }
+
     private String convertBitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
@@ -210,7 +223,39 @@ public class MessagesActivity extends AppCompatActivity {
         recyclerViewMessages.setAdapter(messageAdapter);
     }
 
+    private void updateMessageList() {
+        Long lastMessageTime = 0L;
+        if(msgService != null) {
+            if(messageList != null && !messageList.isEmpty())
+                lastMessageTime = messageList.get(messageList.size()-1).getTimestamp().getTime();
+            msgService.getNewMessages(chatId, lastMessageTime).enqueue(new Callback<List<Message>>() {
+                @Override
+                public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                    if(response.isSuccessful() && response.body() != null) {
+                        if(!response.body().isEmpty() && messageList != null) {
+                            runOnUiThread(() -> {
+                                if (messageAdapter != null) {
+                                    appendAdapter(response.body());
+                                }
+                            });
+                        }
+                        if(messageList == null) {
+                            messageList = response.body();
+                            setupMessageAdapter(messageList);
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<List<Message>> call, Throwable t) {
 
+                }
+            });
+        }
+    }
+    private void appendAdapter(List<Message> newItems) {
+        messageAdapter.addItems(newItems);
+        recyclerViewMessages.scrollToPosition(messageAdapter.getItemCount()-1);
+    }
 
     private void sendMessage() {
         String messageText = editTextMessage.getText().toString().trim();
@@ -223,9 +268,7 @@ public class MessagesActivity extends AppCompatActivity {
             msgService.addNewMessage(chatId, request).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    if(response.code() == 201) {
-                        getMessages();
-                    }
+
                 }
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {

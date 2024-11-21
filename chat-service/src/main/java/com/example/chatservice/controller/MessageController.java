@@ -9,17 +9,18 @@ import com.example.chatservice.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/msg")
 @RequiredArgsConstructor
 public class MessageController {
-    @Autowired
-    MessageService messageService;
+    private final MessageService messageService;
 
     @GetMapping("/{chatId}")
     public List<MessageData> getMessages(@PathVariable Long chatId) {
@@ -34,5 +35,9 @@ public class MessageController {
         else if (newMessageRequest.getType() == MessageType.image) {
             messageService.addImageMessage(newMessageRequest, chatId);
         }
+    }
+    @GetMapping("/unread/{chatId}")
+    public List<MessageData> getUnreadMessages(@RequestParam Long time, @PathVariable Long chatId) {
+        return messageService.getNewMessages(time, chatId);
     }
 }

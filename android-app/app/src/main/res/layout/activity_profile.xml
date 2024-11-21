@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -18,82 +19,85 @@
         app:titleTextColor="@color/white"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/profile_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:id="@+id/profileImage"
-            android:layout_width="256dp"
-            android:layout_height="256dp"
-            android:layout_marginBottom="32dp"
-            android:contentDescription="@string/profile_image_desc"
-            android:src="@drawable/ic_profile"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/upload_pic"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Загрузить фото"
-            android:textColor="@color/white"/>
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp">
 
-        <EditText
-            android:id="@+id/displayNameEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:hint="Имя пользователя"
-            android:inputType="textNoSuggestions"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/profileImage"
-            app:layout_constraintWidth_percent="0.8" />
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="256dp"
+                android:layout_height="256dp"
+                android:layout_marginBottom="32dp"
+                android:contentDescription="@string/profile_image_desc"
+                android:src="@drawable/ic_profile" />
 
-        <EditText
-            android:id="@+id/userInfoEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:inputType="textNoSuggestions"
-            android:hint="Информация о пользователе"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/displayNameEditText"
-            app:layout_constraintWidth_percent="0.8" />
+            <Button
+                android:id="@+id/upload_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Загрузить фото"
+                android:textColor="@color/white"
+                android:layout_marginBottom="16dp" />
 
-        <CheckBox
-            android:id="@+id/privacyCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/privacy_checkbox_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/userInfoEditText" />
+            <EditText
+                android:id="@+id/displayNameEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:hint="Имя пользователя"
+                android:inputType="textNoSuggestions"
+                android:layout_marginBottom="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:padding="12dp" />
 
-        <TextView
-            android:id="@+id/registrationDateTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Дата регистрации: "
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/privacyCheckBox" />
+            <EditText
+                android:id="@+id/userInfoEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:hint="Информация о пользователе"
+                android:inputType="textNoSuggestions"
+                android:layout_marginBottom="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:padding="12dp" />
 
-        <Button
-            android:layout_marginTop="16dp"
-            android:id="@+id/update_profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Обновить"
-            android:textColor="@color/white"/>
-    </LinearLayout>
+            <CheckBox
+                android:id="@+id/privacyCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/privacy_checkbox_text" />
+
+            <TextView
+                android:id="@+id/registrationDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Дата регистрации: "
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/update_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Обновить"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -50,5 +51,21 @@ public class MessageService {
             throw new ResponseStatusException(HttpStatus.FAILED_DEPENDENCY, "Image not uploaded");
         newMessageRequest.setContent(image.getUrl());
         chatService.addMessage(newMessageRequest, chatId);
+    }
+    public List<MessageData> getNewMessages(Long lastMessage, Long chatId) {
+        List<MessageData> messages = chatService.getMessagesAfterTimestamp(chatId, new Date(lastMessage))
+                .stream()
+                .map(msg -> new MessageData(
+                        msg.getId(),
+                        msg.getContent(),
+                        msg.getTimestamp(),
+                        msg.getSender().getId(),
+                        msg.getType()
+                ))
+                .toList();
+        if(messages == null || messages.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return messages;
     }
 }

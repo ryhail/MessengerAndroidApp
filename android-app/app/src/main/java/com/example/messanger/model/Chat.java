@@ -33,6 +33,12 @@ public class Chat {
     public String getMessageTime() {
         if(lastMessage != null) {
             Date timestamp = lastMessage.getTimestamp();
+            Date currentDate = new Date();
+            if(currentDate.getTime() - 86400000 > timestamp.getTime()) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd:MM:HH:mm");
+                dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+                return dateFormat.format(timestamp);
+            }
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
             dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
             return dateFormat.format(timestamp);

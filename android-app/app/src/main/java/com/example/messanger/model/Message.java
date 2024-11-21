@@ -31,6 +31,12 @@ public class Message {
     }
 
     public String getMessageTime() {
+        Date currentDate = new Date();
+        if(currentDate.getTime() - 86400000 > timestamp.getTime()) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd:MM");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+            return dateFormat.format(timestamp);
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
         return dateFormat.format(timestamp);

@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,8 +32,10 @@ import com.example.messanger.service.ProfileService;
 import com.example.messanger.service.UserService;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+import com.example.messanger.model.ChatSorter;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -52,12 +56,16 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private MaterialToolbar toolbar;
+    private TextView viewUsername;
+    private TextView viewEmail;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat);
+
 
         preferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
         user_token = preferences.getString("jwt_token", "NONE");
@@ -67,12 +75,14 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
             finish();
             return;
         }
-
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
+        viewUsername = navigationView.getHeaderView(0).findViewById(R.id.nav_header_title);
+        viewEmail = navigationView.getHeaderView(0).findViewById(R.id.nav_header_subtitle);
+        imageView = navigationView.getHeaderView(0).findViewById(R.id.nav_header_imageview);
         toggle.syncState();
         setupDrawerContent(navigationView);
         checkUser();
@@ -110,21 +120,19 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
     private void setupCurrentUser() {
         Retrofit retrofit = ApiClient.getAuthorizedClient(getString(R.string.auth_base_url),user_token);
         ProfileService profileService = retrofit.create(ProfileService.class);
-        TextView viewUsername = findViewById(R.id.nav_header_title);
-        TextView viewEmail = findViewById(R.id.nav_header_subtitle);
-        ImageView imageView = findViewById(R.id.nav_header_imageview);
         profileService.getProfile(currentUser.getId()).enqueue(new Callback<Profile>() {
             @Override
             public void onResponse(Call<Profile> call, Response<Profile> response) {
                 if(response.isSuccessful() && response.body() != null) {
-                    Glide.with(ChatsActivity.this)
-                            .load(getString(R.string.auth_base_url) + response.body().getProfilePicture())
-                            .circleCrop()
-                            .placeholder(R.drawable.load)
-                            .error(R.drawable.no_image)
-                            .into(imageView);
+                    if(response.body().getProfilePicture() != null)
+                        runOnUiThread(() -> {Glide.with(ChatsActivity.this)
+                                .load(getString(R.string.auth_base_url) + response.body().getProfilePicture())
+                                .circleCrop()
+                                .placeholder(R.drawable.load)
+                                .error(R.drawable.no_image)
+                                .into(imageView);
                     viewUsername.setText(response.body().getNickname());
-                    viewEmail.setText(currentUser.getEmail());
+                    viewEmail.setText(currentUser.getEmail());});
                 }
             }
 
@@ -143,8 +151,13 @@ public class ChatsActivity extends AppCompatActivity implements ChatAdapter.OnCh
             public void onResponse(Call<List<Chat>> call, Response<List<Chat>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     chatList = response.body();
-                    if (!chatList.isEmpty())
-                        setupChatAdapter(chatList);
+                    ChatSorter chatSorter = new ChatSorter();
+                    List<Chat> sortedChats;
+                    if (!chatList.isEmpty()) {
+                        sortedChats = chatSorter.sortChats(chatList);
+                        if (sortedChats != null && !sortedChats.isEmpty())
+                            setupChatAdapter(sortedChats);
+                    }
                 }
             }
             private void returnToLoginPage() {

@@ -31,6 +31,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.currentUserId = currentUserId;
         this.context = context;
     }
+    public void addItems(List<Message> newItems) {
+        int startPosition = messages.size();
+        messages.addAll(newItems);
+        notifyItemRangeInserted(startPosition, newItems.size());
+    }
 
     @NonNull
     @Override

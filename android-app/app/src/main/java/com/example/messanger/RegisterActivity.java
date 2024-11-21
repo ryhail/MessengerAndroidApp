@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.messanger.DTO.LoginResponse;
 import com.example.messanger.DTO.RegisterRequest;
 import com.example.messanger.service.AuthService;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText usernameInput, passwordInput, emailInput;
     private Button registerButton;
     private AuthService authService;
+    AtomicReference<String> token = new AtomicReference<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,17 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    private void getTokenAndRegister() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(RegisterActivity.this, "Ошибка FCM токена", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    token.set(task.getResult());
+                    runOnUiThread(this::registerUser);
+                });
+    }
     private void registerUser() {
         String username = usernameInput.getText().toString();
         String email = emailInput.getText().toString();
@@ -60,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        RegisterRequest registerRequest = new RegisterRequest(username,email, password);
+        RegisterRequest registerRequest = new RegisterRequest(username,email, password, token.get());
         authService.register(registerRequest).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {

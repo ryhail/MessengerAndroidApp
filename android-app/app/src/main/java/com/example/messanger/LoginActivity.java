@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.messanger.DTO.LoginRequest;
 import com.example.messanger.DTO.LoginResponse;
 import com.example.messanger.service.AuthService;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameInput, passwordInput;
     private Button loginButton;
     private AuthService authService;
+    AtomicReference<String> token = new AtomicReference<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +50,20 @@ public class LoginActivity extends AppCompatActivity {
         Retrofit retrofit = ApiClient.getClient(getString(R.string.auth_base_url));
         authService = retrofit.create(AuthService.class);
 
-        loginButton.setOnClickListener(v -> loginUser());
+        loginButton.setOnClickListener(v -> getTokenAndLogin());
     }
 
+    private void getTokenAndLogin() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(LoginActivity.this, "Ошибка FCM токена", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    token.set(task.getResult());
+                    runOnUiThread(this::loginUser);
+                });
+    }
     private void loginUser() {
         String username = usernameInput.getText().toString();
         String password = passwordInput.getText().toString();
@@ -58,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        LoginRequest loginRequest = new LoginRequest(username, password);
+        LoginRequest loginRequest = new LoginRequest(username, password, token.get());
 
         authService.login(loginRequest).enqueue(new Callback<LoginResponse>() {
             @Override

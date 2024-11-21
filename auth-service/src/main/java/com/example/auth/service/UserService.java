@@ -5,10 +5,12 @@ import com.example.auth.model.Role;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,12 @@ public class UserService {
     public User save(User user) {
         return repository.save(user);
     }
-
+    public User get(Long id) {
+        User user =  repository.getReferenceById(id);
+        if (user == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        return user;
+    }
     public User create(User user) {
         if (repository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Пользователь с таким именем уже существует");

@@ -9,10 +9,12 @@ import com.example.auth.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
+                .device(request.getDevice())
                 .build();
         user = userService.create(user);
         user.setUserProfile(Profile.builder()
@@ -49,11 +52,14 @@ public class AuthenticationService {
                 request.getUsername(),
                 request.getPassword()
         ));
-
         var user = userService
                 .userDetailsService()
                 .loadUserByUsername(request.getUsername());
-
+        User user_data = userService.getByUsername(request.getUsername());
+        if(!Objects.equals(user_data.getDevice(), request.getDevice())) {
+            user_data.setDevice(request.getDevice());
+            userService.save(user_data);
+        }
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }

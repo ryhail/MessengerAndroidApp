@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Messanger"
 include(":app")
- 
+include(":nativelib")
+include(":app:nativelib")

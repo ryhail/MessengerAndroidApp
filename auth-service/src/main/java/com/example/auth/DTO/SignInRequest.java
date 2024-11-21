@@ -15,4 +15,5 @@ public class SignInRequest {
     @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8 до 255 символов")
     @NotBlank
     private String password;
+    private String device;
 }

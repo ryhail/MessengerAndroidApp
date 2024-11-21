@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -17,7 +18,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -61,7 +66,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.navigation:navigation-fragment:2.7.3")
     implementation("androidx.navigation:navigation-ui:2.7.3")
+    implementation("com.google.firebase:firebase-messaging")
     implementation(libs.material)
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     testImplementation(libs.junit)
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
     androidTestImplementation(libs.ext.junit)
@@ -70,5 +77,4 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
-
 }

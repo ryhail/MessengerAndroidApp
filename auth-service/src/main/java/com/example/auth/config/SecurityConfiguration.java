@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/user").authenticated()
                         .requestMatchers("/profiles/**").permitAll()
                         .requestMatchers("/profiles/update-pfp").authenticated()
+                        .requestMatchers("/notify/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())

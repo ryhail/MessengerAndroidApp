@@ -1,8 +1,6 @@
 package com.example.chatservice.service;
 
-import com.example.chatservice.DTO.ChatInfoResponse;
-import com.example.chatservice.DTO.CreateChatRequest;
-import com.example.chatservice.DTO.NewMessageRequest;
+import com.example.chatservice.DTO.*;
 import com.example.chatservice.model.Chat;
 import com.example.chatservice.model.Chatter;
 import com.example.chatservice.model.Message;
@@ -23,6 +21,7 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final ChatRepository repository;
     private final ChatterService chatterService;
+    private final NotificationService notificationService;
 
     public List<ChatInfoResponse> getChatsByChattersId(Long id) {
         List<Chat> chats = repository.getChatsByChattersId(id);
@@ -65,7 +64,9 @@ public class ChatService {
         } else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-
+    public List<Message> getMessagesAfterTimestamp(Long chatId, Date time) {
+        return repository.getMessagesAfterTimestamp(chatId, time);
+    }
     public void addMessage(NewMessageRequest messageRequest, Long id) {
         if (repository.existsById(id)) {
             Chat chat = repository.getReferenceById(id);
@@ -75,12 +76,25 @@ public class ChatService {
             msg.setType(messageRequest.getType());
             msg.setTimestamp(new Date());
             chat.addMessage(msg);
-            repository.save(chat);
+            chat = repository.save(chat);
+            if(chat != null) {
+                NotificationRequest notReq = new NotificationRequest();
+                notReq.setChat_id(chat.getId());
+                notReq.setChatName(chat.getName());
+                notReq.setRecipient_id(chat.getChatters().stream().filter(chr -> chr.getId() != messageRequest.getSender().getId()).findFirst().get().getId());
+                notReq.setMsg(new MessageData(
+                       msg.getId(),
+                        msg.getContent(),
+                        msg.getTimestamp(),
+                        msg.getSender().getId(),
+                        msg.getType()
+                ));
+                notificationService.notify(notReq);
+            }
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
-
     public ChatInfoResponse createOrGet(CreateChatRequest createChatRequest) {
         Optional<Chat> chat = repository.getChatByChatters(createChatRequest.getChatters(), createChatRequest.getChatters().size());
         if(chat.isPresent())
